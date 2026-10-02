@@ -1,0 +1,171 @@
+/* 右側ドック（メモ・質問チャット）
+   ラボや模擬試験（#overlay-root 内）の上にも出せるよう z-index は 70。トーストは 80。 */
+.dock {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 70;
+  width: var(--dock-w); max-width: 100vw;
+  pointer-events: none;
+}
+.dock__panel {
+  position: absolute; inset: 0;
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  background: var(--c-surface); color: var(--c-text);
+  border-left: 1px solid var(--c-border); box-shadow: var(--shadow-lg);
+  transform: translateX(105%); transition: transform .28s var(--ease), visibility 0s linear .28s;
+  visibility: hidden; pointer-events: auto;
+}
+.dock.is-open .dock__panel { transform: none; visibility: visible; transition: transform .28s var(--ease); }
+.dock__head {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 8px 10px 8px 12px; padding-top: max(8px, env(safe-area-inset-top));
+  border-bottom: 1px solid var(--c-border); background: var(--c-surface-2);
+}
+.dock__tabs { display: flex; gap: 4px; flex: 1; }
+.dock__tab {
+  flex: 1; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--c-text-dim); font: inherit; font-weight: 700; cursor: pointer;
+}
+.dock__tab:hover { background: var(--c-hover); }
+.dock__tab.is-active { background: var(--c-surface); color: var(--c-text); box-shadow: var(--c-shadow-sm); }
+.dock__body { min-height: 0; position: relative; }
+.dock__view { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; }
+.dock__view[hidden] { display: none; }
+
+/* 広い画面では本文を押し出して横並びにする */
+@media (min-width: 1280px) {
+  body.dock-open #app { margin-right: var(--dock-w); transition: margin-right .28s var(--ease); }
+  body.dock-open .vn-stage { right: var(--dock-w); }
+  body.dock-open .lab-overlay, .lab-overlay.has-dock { right: var(--dock-w); }
+}
+@media (max-width: 1023px) {
+  .dock { width: 100vw; }
+  .dock__panel { border-left: 0; }
+}
+
+/* ---------- メモ ---------- */
+.memo { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.memo__bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px 6px; }
+.memo__subtabs { display: flex; gap: 4px; flex: 1; background: var(--c-surface-2); padding: 3px; border-radius: 10px; }
+.memo__subtab { flex: 1; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--c-text-dim); font: inherit; font-size: .88rem; cursor: pointer; }
+.memo__subtab.is-active { background: var(--c-surface); color: var(--c-text); font-weight: 700; box-shadow: var(--c-shadow-sm); }
+.memo__menu-wrap { position: relative; }
+.memo__menu {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 5; min-width: 230px;
+  display: grid; padding: 6px; border-radius: 12px; background: var(--c-surface);
+  border: 1px solid var(--c-border); box-shadow: var(--shadow-lg);
+}
+.memo__menu[hidden] { display: none; }
+.memo__menu button { text-align: left; padding: 9px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--c-text); font: inherit; font-size: .88rem; cursor: pointer; }
+.memo__menu button:hover { background: var(--c-hover); }
+.memo__view { display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; padding: 4px 12px 12px; }
+.memo__view[hidden] { display: none; }
+.memo__tools { display: flex; flex-wrap: wrap; gap: 4px; }
+.memo__tool { padding: 4px 10px; border: 1px solid var(--c-border); border-radius: 8px; background: var(--c-surface); color: var(--c-text); font: inherit; font-size: .8rem; cursor: pointer; }
+.memo__tool:hover { border-color: var(--c-accent); }
+.memo__textarea {
+  flex: 1; min-height: 160px; width: 100%; resize: none;
+  padding: 12px 14px; border: 1px solid var(--c-border); border-radius: 12px;
+  background: var(--wb-bg); color: var(--wb-ink); font: inherit; font-size: .95rem; line-height: 1.8;
+  background-image: linear-gradient(transparent calc(1.8em - 1px), var(--wb-line) 1px);
+  background-size: 100% 1.8em; background-attachment: local; background-position: 0 12px;
+}
+.memo__textarea:focus { outline: 2px solid var(--c-focus); outline-offset: 0; }
+.memo__textarea:disabled { opacity: .55; background-image: none; }
+.memo__preview { flex: 1; overflow-y: auto; padding: 12px 14px; border: 1px solid var(--c-border); border-radius: 12px; background: var(--wb-bg); color: var(--wb-ink); line-height: 1.8; }
+.memo__muted { color: var(--c-text-faint); }
+.memo__foot { display: flex; justify-content: space-between; font-size: .78rem; color: var(--c-text-faint); min-height: 1.2em; }
+.memo__ctx-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.memo__ctx-title { font-weight: 800; line-height: 1.5; flex: 1; min-width: 0; }
+.memo__hint { margin: 0; font-size: .82rem; color: var(--c-text-dim); line-height: 1.6; }
+.memo__search { width: 100%; padding: 8px 12px; border: 1px solid var(--c-border); border-radius: 10px; background: var(--c-surface); color: var(--c-text); font: inherit; }
+.memo__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; overflow-y: auto; align-content: start; flex: 1; }
+.memo__item { display: flex; align-items: stretch; gap: 4px; border: 1px solid var(--c-border); border-radius: 10px; background: var(--c-surface); }
+.memo__item:hover { border-color: var(--c-accent); }
+.memo__item-main { flex: 1; min-width: 0; display: grid; gap: 2px; padding: 8px 10px; border: 0; background: transparent; color: var(--c-text); font: inherit; text-align: left; cursor: pointer; }
+.memo__item-title { font-weight: 700; font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.memo__item-excerpt { font-size: .8rem; color: var(--c-text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.memo__item-date { font-size: .72rem; color: var(--c-text-faint); }
+.memo__item-del { border: 0; background: transparent; color: var(--c-text-dim); cursor: pointer; padding: 0 10px; font: inherit; font-size: .8rem; white-space: nowrap; border-radius: 0 10px 10px 0; }
+.memo__item-del.is-armed { background: var(--c-ng); color: #fff; }
+.memo__empty { padding: 20px 8px; text-align: center; color: var(--c-text-dim); font-size: .88rem; line-height: 1.7; }
+
+/* ---------- チャット ---------- */
+.chat { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.chat__head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--c-border); }
+.chat__head .avatar { width: 40px; height: 40px; }
+.chat__head-text { display: grid; flex: 1; min-width: 0; line-height: 1.35; }
+.chat__mode { font-size: .75rem; color: var(--c-text-dim); }
+.chat__mode.is-online { color: var(--c-ok); font-weight: 700; }
+.chat__settings { padding: 10px 12px; border-bottom: 1px solid var(--c-border); background: var(--c-surface-2); max-height: 55%; overflow-y: auto; }
+.chat__settings[hidden] { display: none; }
+.chat__banner { margin: 8px 12px 0; padding: 8px 12px; border-radius: 10px; background: var(--c-warn-soft); font-size: .84rem; line-height: 1.6; }
+.chat__banner[hidden], .chat__setup[hidden], .chat__ctx[hidden] { display: none; }
+.chat__setup { padding: 8px 12px 0; }
+.chat__setup-card { display: grid; gap: 6px; padding: 12px; border-radius: 12px; border: 1px dashed var(--c-accent); background: var(--c-accent-soft); font-size: .88rem; line-height: 1.65; }
+.chat__setup-card p { margin: 0; }
+.chat__setup-small { font-size: .78rem; color: var(--c-text-dim); }
+.chat__setup-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chat__setup-later { justify-self: end; border: 0; background: transparent; color: var(--c-text-dim); font: inherit; font-size: .78rem; cursor: pointer; text-decoration: underline; padding: 2px 4px; }
+.chat__setup-mini { width: 100%; text-align: left; padding: 6px 10px; border: 1px dashed var(--c-border); border-radius: 10px; background: var(--c-surface-2); color: var(--c-text-dim); font: inherit; font-size: .78rem; cursor: pointer; }
+.chat__setup-mini:hover { color: var(--c-text); border-color: var(--c-accent); }
+.chat__key-input, .chat__key-mode { flex: 1 1 140px; min-width: 0; padding: 8px 10px; border: 1px solid var(--c-border); border-radius: 8px; background: var(--c-surface); color: var(--c-text); font: inherit; font-size: .88rem; }
+.chat__ctx {
+  display: flex; align-items: center; gap: 6px; margin: 8px 12px 0; padding: 6px 10px;
+  border-radius: 999px; background: var(--c-surface-2); font-size: .8rem; color: var(--c-text-dim); cursor: pointer;
+}
+.chat__ctx-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; color: var(--c-text); }
+.chat__list { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
+.chat__msg { display: flex; gap: 8px; align-items: flex-start; }
+.chat__msg .avatar { width: 34px; height: 34px; flex: none; }
+.chat__msg--user { justify-content: flex-end; }
+.chat__welcome { display: flex; gap: 8px; align-items: flex-start; }
+.chat__welcome .avatar { width: 34px; height: 34px; flex: none; }
+.chat__bubble { max-width: 88%; padding: 10px 12px; border-radius: 14px; line-height: 1.75; font-size: .92rem; word-break: break-word; }
+.chat__bubble--user { background: var(--c-accent); color: #fff; border-bottom-right-radius: 4px; white-space: pre-wrap; }
+.chat__bubble--ren { background: var(--c-surface-2); border: 1px solid var(--c-border); border-top-left-radius: 4px; }
+.chat__msg.is-error .chat__bubble--ren { border-color: var(--c-ng); background: var(--c-ng-soft); }
+.chat__msg-ctx { font-size: .72rem; opacity: .85; margin-bottom: 4px; }
+.chat__body > :first-child { margin-top: 0; }
+.chat__body > :last-child { margin-bottom: 0; }
+.chat__body p { margin: 0 0 .6em; }
+.chat__body .md-table-wrap { overflow-x: auto; }
+.chat__body .md-table { font-size: .82rem; }
+.chat__body.is-thinking::after { content: '考え中'; color: var(--c-text-dim); animation: chat-dots 1.2s steps(4) infinite; }
+@keyframes chat-dots { 0% { content: '考え中'; } 25% { content: '考え中.'; } 50% { content: '考え中..'; } 75% { content: '考え中...'; } }
+.chat__meta { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 6px; font-size: .72rem; color: var(--c-text-faint); }
+.chat__actions { display: flex; gap: 4px; }
+.chat__act { padding: 2px 8px; border: 1px solid var(--c-border); border-radius: 999px; background: var(--c-surface); color: var(--c-text-dim); font: inherit; font-size: .72rem; cursor: pointer; }
+.chat__act:hover { color: var(--c-text); border-color: var(--c-accent); }
+.chat__chips { display: flex; gap: 6px; overflow-x: auto; padding: 4px 12px 6px; scrollbar-width: thin; }
+.chat__chip { flex: none; font-size: .8rem; }
+.chat__form { display: flex; gap: 6px; align-items: flex-end; padding: 8px 12px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--c-border); }
+.chat__input {
+  flex: 1; min-width: 0; resize: none; max-height: 160px; padding: 9px 12px;
+  border: 1px solid var(--c-border); border-radius: 12px; background: var(--c-surface); color: var(--c-text);
+  font: inherit; font-size: .95rem; line-height: 1.5;
+}
+.chat__input:focus { outline: 2px solid var(--c-focus); outline-offset: 0; }
+.chat__send, .chat__stop { flex: none; }
+.chat__send[hidden], .chat__stop[hidden] { display: none; }
+
+/* チャット設定（設定画面と共用） */
+.chat-set { display: grid; gap: 10px; }
+.chat-set__row { display: grid; grid-template-columns: 8.5em minmax(0, 1fr); gap: 10px; align-items: center; }
+.chat-set__label { font-weight: 700; font-size: .88rem; }
+.chat-set select, .chat-set input[type="password"], .chat-set input[type="text"] {
+  width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--c-border); border-radius: 8px;
+  background: var(--c-surface); color: var(--c-text); font: inherit; font-size: .9rem;
+}
+.chat-set select:disabled { opacity: .5; }
+.chat-set__key { display: flex; gap: 6px; flex-wrap: wrap; }
+.chat-set__key input { flex: 1 1 160px; }
+.chat-set__radios { display: flex; gap: 14px; flex-wrap: wrap; font-size: .9rem; }
+.chat-set__check { font-size: .88rem; }
+.chat-set__status { margin: 0; font-size: .85rem; color: var(--c-text-dim); }
+.chat-set__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.chat-set__note { margin: 0; font-size: .78rem; color: var(--c-text-faint); line-height: 1.7; }
+.chat-set--compact .chat-set__row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dock__panel { transition: none; }
+  .chat__body.is-thinking::after { animation: none; content: '考え中…'; }
+}

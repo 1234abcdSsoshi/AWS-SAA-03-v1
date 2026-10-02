@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>先輩、AWSを教えてください！ SAA-C03 リベンジ・レッスン</title>
+  <meta name="description" content="SAA-C03 再挑戦のためのストーリー型クイズ＆ハンズオン学習アプリ（非公式）">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/story.css">
+  <link rel="stylesheet" href="css/quiz.css">
+  <link rel="stylesheet" href="css/handson.css">
+  <link rel="stylesheet" href="css/audio.css">
+  <link rel="stylesheet" href="css/panels.css">
+</head>
+<body>
+  <div id="app">
+    <header id="topbar"></header>
+    <main id="screen-root"></main>
+  </div>
+  <aside id="dock" aria-hidden="true"></aside>
+  <div id="overlay-root"></div>
+  <div id="toast-root" aria-live="polite"></div>
+  <noscript><p style="padding:24px">このアプリは JavaScript を有効にしてご利用ください。</p></noscript>
+
+  <!-- 1. 名前空間（最初） -->
+  <script src="js/core/namespace.js"></script>
+
+  <!-- 2. データ -->
+  <script src="data/curriculum.js"></script>
+  <script src="data/characters.js"></script>
+  <script src="data/assets.js"></script>
+  <script src="data/audio-catalog.js"></script>
+
+  <script src="data/questions/pro-diag.js"></script>
+  <script src="data/questions/c1-iam.js"></script>
+  <script src="data/questions/c1-net.js"></script>
+  <script src="data/questions/c1-data.js"></script>
+  <script src="data/questions/c2-decouple.js"></script>
+  <script src="data/questions/c2-ha.js"></script>
+  <script src="data/questions/c3-storage.js"></script>
+  <script src="data/questions/c3-compute.js"></script>
+  <script src="data/questions/c4-db.js"></script>
+  <script src="data/questions/c4-net.js"></script>
+  <script src="data/questions/c4-data.js"></script>
+  <script src="data/questions/c5-storage.js"></script>
+  <script src="data/questions/c5-compute.js"></script>
+  <script src="data/questions/c6-db.js"></script>
+  <script src="data/questions/c6-net.js"></script>
+  <script src="data/questions/mock-d1.js"></script>
+  <script src="data/questions/mock-d2.js"></script>
+  <script src="data/questions/mock-d3.js"></script>
+  <script src="data/questions/mock-d4.js"></script>
+
+  <script src="data/slides/slides-prologue.js"></script>
+  <script src="data/slides/slides-ch1.js"></script>
+  <script src="data/slides/slides-ch2.js"></script>
+  <script src="data/slides/slides-ch3.js"></script>
+  <script src="data/slides/slides-ch4.js"></script>
+  <script src="data/slides/slides-ch5.js"></script>
+  <script src="data/slides/slides-ch6.js"></script>
+  <script src="data/slides/slides-ch7.js"></script>
+
+  <script src="data/glossary-a.js"></script>
+  <script src="data/glossary-b.js"></script>
+
+  <script src="data/labs/labs-a.js"></script>
+  <script src="data/labs/labs-b.js"></script>
+
+  <script src="data/story/prologue.js"></script>
+  <script src="data/story/ch1.js"></script>
+  <script src="data/story/ch2.js"></script>
+  <script src="data/story/ch3.js"></script>
+  <script src="data/story/ch4.js"></script>
+  <script src="data/story/ch5.js"></script>
+  <script src="data/story/ch6.js"></script>
+  <script src="data/story/ch7.js"></script>
+
+  <!-- 3. ベンダー -->
+  <script src="vendor/anthropic-sdk.min.js"></script>
+
+  <!-- 4. コア・各モジュール -->
+  <script src="js/core/util.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/assets.js"></script>
+  <script src="js/core/stats.js"></script>
+  <script src="js/audio/audio.js"></script>
+  <script src="js/quiz/quiz.js"></script>
+  <script src="js/quiz/practice.js"></script>
+  <script src="js/quiz/mock.js"></script>
+  <script src="js/handson/widgets.js"></script>
+  <script src="js/handson/lab.js"></script>
+  <script src="js/story/engine.js"></script>
+  <script src="js/panels/dock.js"></script>
+  <script src="js/panels/memo.js"></script>
+  <script src="js/panels/chat.js"></script>
+
+  <!-- 5. アプリ本体（最後） -->
+  <script src="js/app.js"></script>
+  <script src="js/selftest.js"></script>
+</body>
+</html>
